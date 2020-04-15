@@ -1,0 +1,134 @@
+<style>
+    .main_bg
+    {
+      position: relative;
+      top: 0;
+      left: 0;
+      width:1920;
+      height:100vh; 
+      background-image: url('../images/bg_qualcomm.jpg');
+      background-repeat : repeat;
+    }
+    .main_logo
+    {
+      position: absolute;
+      top: 2%;
+      left : 42.5%;
+      width:200px;
+    }
+  </style>
+<div style="position: relative; left: 0; top: 0;height:100vh">
+    <div id="feedback_div" class="main_bg"></div>
+    <!-- <img src="images/logo.png" class="main_logo"/> -->
+</div>
+<script type="text/javascript">
+
+var screen_width = screen.width;
+var screen_height = screen.height;
+
+var divsize  = 80 * 1 ; //300
+
+var columns = parseInt(screen_width / divsize);
+var rows = parseInt(screen_height / divsize);
+// var total_limit = columns * rows;
+var total_limit = 55;
+var img_width = divsize + "px";
+var img_height =  divsize + "px";
+
+// total pic 55  can show in one time 
+
+var previous_list = [];
+var bg_images = ['images/splat_1.jpg','images/splat_2.png','images/splat_3.png','images/splat_4.png','images/splat_5.png'];
+var last_img_position = 0;
+var current_row = 0;
+var current_columns = 0;
+
+var x = ["277","264","188","89","33","50","126","176","211","235","345","345","398","489","489","493","627","561","569","637","717","717","717","797","797","797","797","984","902","869","909","989","1116","1047","1049","1116","1183","1189","1233","1263","1298","1338","1376","1408","1443","1488","1521","1552","1587","1632","1664","1696","1731","1771","1803"]
+var y = ["500","408","353","366","443","536","596","513","584","653","439","527","597","519","439","599","439","483","559","597","530","447","599","356","439","521","603","447","447","527","593","589","439","483","559","599","563","487","603","526","447","526","603","526","447","526","603","526","447","526","603","526","447","526","603"]
+
+
+setInterval(function() {
+
+      var remote = require('electron').remote;
+      var arr_list = remote.getGlobal('users_list');
+      
+    
+      if(arr_list.length!=0 && arr_list.length<= total_limit && previous_list.length != arr_list.length){
+            if(arr_list.length == 1){
+              document.getElementById("feedback_div").innerHTML = "";
+            }
+             previous_list = arr_list;
+             var last_obj = arr_list[arr_list.length-1];
+
+             var img_position = 0;
+             if(last_img_position==0){
+                img_position = 0; last_img_position=1;
+              }else if(last_img_position==1){
+                 img_position = 1; last_img_position=2;
+              }else if(last_img_position==2){
+                 img_position = 2; last_img_position=3;
+              }else if(last_img_position==3){
+                 img_position = 3; last_img_position=4;
+              }else if(last_img_position==4){
+                 img_position = 4; last_img_position=0;
+              }
+
+             var posx = (current_columns * 300) + (0 * (current_columns+1));
+             var posy = (current_row * 300)  + (0 * (current_row+1));
+             if(current_columns>=2 && current_row==0){
+               posx = posx+200;
+             }
+             if(current_columns==(columns-1)){
+                current_columns = 0;
+                current_row +=1;
+             }else{
+               current_columns +=1;
+             }
+
+             var top_div = document.createElement('div');
+             console.log("top_div----",top_div);
+             top_div.setAttribute("id", "div"+arr_list.length);
+             top_div.className = "hvr-bounce-in";
+             top_div.style.backgroundImage = "url('"+bg_images[img_position]+"')";
+             top_div.style.backgroundRepeat = "no-repeat";
+             top_div.style.backgroundSize = "100% 100%";
+             top_div.style.width = img_width;
+             top_div.style.height = img_height;
+
+          
+             top_div.style.left = x[arr_list.length-1]  + 'px';   // posx+"px"
+             top_div.style.top = y[arr_list.length-1]  + 'px';    //posy+"px"
+             top_div.style.position = "absolute";
+             top_div.style.textAlign = "center";
+
+             var img = document.createElement('img');
+          
+             img.src = "data:image/png;base64,"+last_obj.image;
+             img.style.width = "36px";
+            //  img.style.marginLeft ="20px"
+             img.style.marginTop = "10px";
+             img.style.borderRadius = "50%";
+             
+             top_div.appendChild(img);
+
+             var br = document.createElement('br');
+             top_div.appendChild(br);
+
+             var label = document.createElement('label');
+             label.innerHTML = last_obj.message;
+             label.style.color = "rgb(236, 255, 10)";
+             label.style.fontFamily = "sans-serif";
+             top_div.appendChild(label);
+
+             document.getElementById('feedback_div').appendChild(top_div);
+
+             setTimeout(function() {
+                 top_div.className = top_div.className + " show";
+                 setTimeout(function() {
+                     top_div.className = top_div.className;
+                   }, 200);
+               }, 10);
+       }
+}, 1000);
+
+</script>
